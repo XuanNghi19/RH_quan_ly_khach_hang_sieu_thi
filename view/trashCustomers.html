@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danh sách khách hàng bị xóa</title>
+    <!-- Bootstrap CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="/styles/styles.css" />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="row">
+        <button class="col-md-3 btn p-0 back-icon" onclick="indexPage()">
+          <img src="/bucket/image/back.svg" alt="back">
+        </button>
+        <h4 class="col-md-9">Danh sách khách hàng đã xóa</h4>
+      </div>
+      <table id="customerTable" class="table">
+        <thead class="bg-light">
+          <tr>
+            <th>
+              <div class="box">
+                <input type="checkbox" id="select-all" />
+                <button
+                  class="btn p-0 icon-button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#restoreManyCustomers"
+                >
+                  <img src="/bucket/image/restore.svg" alt="restore" />
+                  <button
+                    class="btn p-0 icon-button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#destroyMannyCustomersModal"
+                  >
+                    <img src="/bucket/image/delete.svg" alt="Trash" />
+                  </button>
+                </button>
+              </div>
+            </th>
+            <th>Mã khách hàng</th>
+            <th>Họ tên</th>
+            <th>Địa chỉ</th>
+            <th>Điện thoại</th>
+            <th>Nhóm</th>
+            <th>Chức năng</th>
+          </tr>
+        </thead>
+        <tbody id="trash-customer-table">
+          <!-- Customer rows will be dynamically populated here -->
+        </tbody>
+      </table>
+
+      <!-- Modal restore manny customers-->
+      <div
+        class="modal fade"
+        id="restoreManyCustomers"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalTitleId">Phục hồi khách hàng</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              Bạn có chắc chắn muốn phục hồi những khách hàng này?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="restoreManyCustomers()"
+              >
+                Đồng ý
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal restore customers-->
+      <div
+        class="modal fade"
+        id="restoreCustomersModal"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalTitleId">
+                Khôi phục khách hàng
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              Bạn có chắc muốn khôi phục khách hàng với ID:
+              <span id="operationId"></span> ?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="restoreCustomer()"
+              >
+                Đồng ý
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal destroy manny customers-->
+      <div
+        class="modal fade"
+        id="destroyMannyCustomersModal"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalTitleId">
+                Xóa hoàn toàn khách hàng
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              Bạn có chắc muốn xóa hoàn toàn những khách hàng này?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                onclick="destroyMannyCustomers()"
+              >
+                Đồng ý
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal destroy customers-->
+      <div
+        class="modal fade"
+        id="destroyCustomersModal"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalTitleId">
+                Xóa hoàn toàn khách hàng
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              Bạn có chắc muốn xóa hoàn toàn khách hàng với ID:
+              <span id="operationDestroyId"></span> ?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                onclick="destroyCustomer()"
+              >
+                Đồng ý
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Link to external JS file -->
+    <script src="/js/trashCustomers.js"></script>
+  </body>
+</html>

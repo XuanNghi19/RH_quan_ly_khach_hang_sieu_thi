@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trang chủ</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/styles.css" />
+  </head>
+  <body>
+    <nav class="p-4 navbar navbar-expand-lg navbar-dark bg-primary">
+      <div
+        class="container-fluid d-flex justify-content-center position-relative"
+      >
+        <a
+          class="navbar-brand position-absolute start-0"
+          href="trang_chu.html"
+        >
+          <img
+            src="/bucket/image/logo.png"
+            class="me-2"
+            style="width: 70px; height: 70px"
+            alt="logo"
+          />
+          CRM Emart mall
+        </a>
+
+        <div class="d-flex justify-content-center">
+          <ul class="navbar-nav">
+            <li class="nav-item me-4">
+              <a
+                class="nav-link active fs-4"
+                aria-current="page"
+                href="trang_chu.html"
+                >Trang chủ</a
+              >
+            </li>
+            <li class="nav-item me-4">
+              <a class="nav-link fs-4" href="index.html">Quản lý khách hàng</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fs-4" href="hang_hoa.html">Hàng hóa</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid my-4">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card">
+            <h5 class="dashboard-heading">Tổng thu nhập</h5>
+            <h3>14.000.000 VND</h3>
+            <div class="chart-container">
+              <canvas id="depositChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <h5 class="dashboard-heading">Số lượng hàng hóa</h5>
+            <h3>1000 sản phẩm</h3>
+            <div class="chart-container">
+              <canvas id="goodsChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <h5 class="dashboard-heading">Tổng chi tiêu</h5>
+            <h3>14.000.000 VND</h3>
+            <div class="chart-container">
+              <canvas id="expensesChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-4">
+        <div class="col-md-8">
+          <div class="card">
+            <h5 class="dashboard-heading">Tổng quan hàng hóa</h5>
+            <div class="d-flex justify-content-start mb-3">
+              <button class="btn btn-outline-primary me-2">Tuần</button>
+              <button class="btn btn-outline-primary me-2">Tháng</button>
+              <button class="btn btn-outline-primary me-2">Năm</button>
+              <button class="btn btn-outline-primary">Tất cả</button>
+            </div>
+            <div class="chart-container">
+              <canvas id="overviewGoodsChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <h5 class="dashboard-heading">Tổng thu nhập từ sản phẩm</h5>
+            <h3>6.743.000 VND</h3>
+            <div class="chart-container">
+              <canvas id="earningProductChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-4 text-center">
+        <div class="col-md-4">
+          <div class="card">
+            <h5>12.751</h5>
+            <p>Số lượng hàng hóa</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <h5>721</h5>
+            <p>Sản phẩm bán chạy</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <h5>12.275 giờ</h5>
+            <p>Giờ làm việc nhân viên</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      const ctxDeposit = document
+        .getElementById("depositChart")
+        .getContext("2d");
+      new Chart(ctxDeposit, {
+        type: "line",
+        data: {
+          labels: ["Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8"],
+          datasets: [
+            {
+              label: "Thu nhập",
+              data: [5000000, 7000000, 8000000, 14000000],
+              backgroundColor: "rgba(54, 162, 235, 0.2)",
+              borderColor: "rgba(54, 162, 235, 1)",
+              borderWidth: 2,
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: 1000,
+          },
+        },
+      });
+
+      const ctxGoods = document.getElementById("goodsChart").getContext("2d");
+      new Chart(ctxGoods, {
+        type: "doughnut",
+        data: {
+          labels: [
+            "Hàng hóa bán chạy",
+            "Hàng hóa tồn kho",
+            "Hàng hóa hết hàng",
+          ],
+          datasets: [
+            {
+              data: [300, 500, 200],
+              backgroundColor: ["#28a745", "#ffc107", "#dc3545"],
+              hoverOffset: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            animateRotate: true,
+            duration: 1000,
+          },
+        },
+      });
+
+      const ctxExpenses = document
+        .getElementById("expensesChart")
+        .getContext("2d");
+      new Chart(ctxExpenses, {
+        type: "line",
+        data: {
+          labels: ["Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8"],
+          datasets: [
+            {
+              label: "Chi tiêu",
+              data: [6000000, 8000000, 9000000, 14000000],
+              backgroundColor: "rgba(255, 99, 132, 0.2)",
+              borderColor: "rgba(255, 99, 132, 1)",
+              borderWidth: 2,
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: 1000,
+          },
+        },
+      });
+
+      const ctxOverviewGoods = document
+        .getElementById("overviewGoodsChart")
+        .getContext("2d");
+      new Chart(ctxOverviewGoods, {
+        type: "line",
+        data: {
+          labels: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
+          datasets: [
+            {
+              label: "Số lượng hàng bán",
+              data: [150, 200, 250, 300],
+              borderColor: "rgba(54, 162, 235, 1)",
+              backgroundColor: "rgba(54, 162, 235, 0.2)",
+              fill: true,
+              borderWidth: 2,
+            },
+            {
+              label: "Doanh thu",
+              data: [1000000, 1200000, 1500000, 1800000],
+              borderColor: "rgba(255, 99, 132, 1)",
+              backgroundColor: "rgba(255, 99, 132, 0.2)",
+              fill: true,
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: 1000,
+          },
+        },
+      });
+
+      const ctxEarningProduct = document
+        .getElementById("earningProductChart")
+        .getContext("2d");
+      new Chart(ctxEarningProduct, {
+        type: "line",
+        data: {
+          labels: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4"],
+          datasets: [
+            {
+              label: "Doanh thu từ sản phẩm",
+              data: [10000000, 12000000, 15000000, 18000000],
+              backgroundColor: "rgba(54, 162, 235, 0.2)",
+              borderColor: "rgba(54, 162, 235, 1)",
+              borderWidth: 2,
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: 1000,
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
