@@ -492,6 +492,7 @@ editCustomerModal.addEventListener("show.bs.modal", function(e) {
     document.getElementById("editCustomerAddress").value = customers[idx].address;
   }
 });
+
 function editCustomer() {
   const group = document.getElementById("editCustomerGroup").value;
   const id = document.getElementById("editCustomerId").value;

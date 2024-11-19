@@ -3,21 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Customer Management</title>
+    <title>Quản lý hàng hóa</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="../styles/styles.css" />
   </head>
   <body>
     <nav class="p-4 navbar navbar-expand-lg navbar-dark bg-primary">
       <div
         class="container-fluid d-flex justify-content-center position-relative"
       >
-        <a class="navbar-brand position-absolute start-0" href="trang_chu.html">
+        <a class="navbar-brand position-absolute start-0" href="../php/dashboard.php">
           <img
-            src="/bucket/image/logo.png"
+            src="../bucket/image/logo.png"
             class="me-2"
             style="width: 70px; height: 70px"
             alt="logo"
@@ -29,15 +29,15 @@
           <!-- Menu điều hướng nằm giữa -->
           <ul class="navbar-nav">
             <li class="nav-item me-4">
-              <a class="nav-link fs-4" aria-current="page" href="trang_chu.html"
+              <a class="nav-link fs-4" aria-current="page" href="../php/dashboard.php"
                 >Trang chủ</a
               >
             </li>
             <li class="nav-item me-4">
-              <a class="nav-link fs-4" href="index.html">Quản lý khách hàng</a>
+              <a class="nav-link fs-4" href="../php/customerManagement.php">Quản lý khách hàng</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active fs-4" href="hang_hoa.html">Hàng hóa</a>
+              <a class="nav-link active fs-4" href="../php/productManagement.php">Hàng hóa</a>
             </li>
           </ul>
         </div>
@@ -74,7 +74,7 @@
             <td>1000</td>
             <td>Chuối</td>
             <td>20.000đ</td>
-            <td><img src="chuoi.jpg" class="product-img" alt="Chuối" /></td>
+            <td><img src="../bucket/image/hang_hoa/chuoi.jpg" class="product-img" alt="Chuối" /></td>
             <td>
               <button class="btn btn-sm btn-primary edit-btn">Sửa</button>
               <button class="btn btn-sm btn-danger delete-btn">Xóa</button>
