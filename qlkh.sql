@@ -1,11 +1,22 @@
+create table classify(
+    id int auto_increment primary key,
+    name varchar(255) not null,
+    discount decimal(5, 2) not null
+);
+
+insert into classify (name, discount)
+values 
+("Thông thường", 0.00);
+
 create table khach_hang(
     id int auto_increment primary key,
     name varchar(255) not null,
     address text,
     phoneNum varchar(15),
-    classify varchar(50) default 'Thông thường',
+    classify_id int not null default 1,
     avatar_url varchar(255),
-    join_date datetime default current_timestamp
+    join_date datetime default current_timestamp,
+    foreign key (classify_id) references classify(id)
 );
 
 create table hang_hoa(
@@ -42,6 +53,11 @@ CREATE TABLE don_hang (
     FOREIGN KEY (khach_hang_id) REFERENCES khach_hang(id)
 );
 
+insert into classify (name, discount)
+values 
+("Hạng Bạc", 10.00),
+("Hạng Vàng", 25.00),
+("VIP", 50.00);
 
 insert into khach_hang (name, address, phoneNum, classify, avatar_url)
 values
@@ -55,9 +71,7 @@ values
 ("Nguyễn Minh Anh", "78 Cầu Giấy, Hà Nội", "0234516247", "../bucket/image/avatar/Phạm Thành Công.jpg"),
 ("Phạm Thị Hồng", "89 Đại La, Hà Nội", "0234516248", "../bucket/image/avatar/Phạm Thành Công.jpg"),
 ("Vũ Thanh Hà", "32 Lạc Long Quân, Hà Nội", "0234516249", "../bucket/image/avatar/Phạm Thành Công.jpg");
-
--- insert into khach_hang (name, address, phoneNum, classify, avatar_url)
--- values("Trần Thị Lan", "11 Trung Kính, Hà Nội", "0234516250", "../bucket/image/avatar/Trần Thị Lan.jpg");
+("Trần Thị Lan", "11 Trung Kính, Hà Nội", "0234516250", "../bucket/image/avatar/Trần Thị Lan.jpg");
 
 
 

@@ -1,4 +1,4 @@
-fetch("../php/api.php?action=getCustomerStats")
+fetch("../php/api_get.php?action=getCustomerStats")
   .then((response) => response.json())
   .then((data) => {
     console.log("getCustomerStats: ", data);
@@ -47,7 +47,7 @@ fetch("../php/api.php?action=getCustomerStats")
   })
   .catch((error) => console.error("Error: ", error));
 
-fetch("../php/api.php?action=getDoanhThuChart")
+fetch("../php/api_get.php?action=getDoanhThuChart")
   .then((response) => response.json())
   .then((data) => {
     console.log("Doanh thu: ", data);
@@ -87,7 +87,7 @@ fetch("../php/api.php?action=getDoanhThuChart")
   })
   .catch((error) => console.error("Error: ", error));
 
-fetch("../php/api.php?action=getHangHoaChart")
+fetch("../php/api_get.php?action=getHangHoaChart")
   .then((response) => response.json())
   .then((data) => {
     console.log("Hàng hóa: ", data);
@@ -116,7 +116,7 @@ fetch("../php/api.php?action=getHangHoaChart")
   })
   .catch((error) => console.error("Error: ", error));
 
-fetch("../php/api.php?action=getChiTieuChart")
+fetch("../php/api_get.php?action=getChiTieuChart")
   .then((response) => response.json())
   .then((data) => {
     console.log("Chi tiêu: ", data);
@@ -155,7 +155,7 @@ fetch("../php/api.php?action=getChiTieuChart")
   })
   .catch((error) => console.error("Error: ", error));
 
-fetch("../php/api.php?action=getHangHoaStock")
+fetch("../php/api_get.php?action=getHangHoaStock")
   .then((response) => response.json())
   .then((data) => {
     console.log("total items: ", data);

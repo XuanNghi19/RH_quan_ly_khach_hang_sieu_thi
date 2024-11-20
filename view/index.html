@@ -152,35 +152,9 @@
             </div>
           </div>
           <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center mt-3 mb-0">
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <li class="page-item active" aria-current="page">
-                <a class="page-link" href="#">1</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#">2</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#">3</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#">4</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#">5</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
-          <p id="result-count mt-0" class="text-muted">Tìm thấy 0 kết quả.</p>
+            <ul class="pagination justify-content-center mt-3 mb-0"></ul>
+          </nav>          
+          <p id="result-count" class="text-muted">Tìm thấy 0 kết quả.</p>
         </div>
       </div>
 
@@ -316,15 +290,15 @@
                   />
                 </div>
                 <div class="mb-3">
-                  <label for="categoryDescription" class="form-label"
-                    >Miêu Tả</label
+                  <label for="categoryDiscount" class="form-label"
+                    >Giảm giá</label
                   >
-                  <textarea
+                  <input
+                    type="number"
                     class="form-control"
-                    id="groupDescription"
-                    rows="3"
+                    id="groupDiscount"
                     required
-                  ></textarea>
+                  />
                 </div>
               </form>
             </div>
@@ -340,7 +314,7 @@
                 type="button"
                 class="btn btn-primary"
                 id="saveCategoryBtn"
-                onclick="addGroup()"
+                onclick="addClassify()"
               >
                 Lưu
               </button>
