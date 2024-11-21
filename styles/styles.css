@@ -21,9 +21,6 @@
   border-radius: 50%;
   margin-right: 10px;
 }
-.card-header {
-  background-color: #0d6efd !important;
-}
 
 .list-group-item.active {
   background-color: #0d6efd !important;

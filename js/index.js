@@ -1,8 +1,6 @@
 // Example customer data
 var customers = [];
 
-var trashCustomers = [];
-
 var classifies = [];
 
 var operationId;
@@ -21,6 +19,9 @@ function loadClassifies() {
     .then((data) => {
       console.log("calssifies: ", data);
       classifies = data;
+
+      //load classifies truoc khi load customer vì load customer sử dụng data classifies
+      loadCustomers();
       const groupList = document.getElementById("groupList");
       groupList.innerHTML = "";
 
@@ -29,6 +30,7 @@ function loadClassifies() {
       optionAll.id = "groupList";
       optionAll.setAttribute("data-category", "Tất Cả");
       optionAll.textContent = "Tất Cả";
+      optionAll.classList.add("active");
 
       groupList.appendChild(optionAll);
 
@@ -53,7 +55,7 @@ function loadClassifies() {
           this.classList.add("active");
 
           const category = this.getAttribute("data-category");
-          findCustomersByClassify(category);
+          findCustomers(category);
         });
       });
     });
@@ -98,46 +100,44 @@ function loadCustomers() {
   customerTable.innerHTML = "";
 
   fetch(
-    `../php/api_get.php?action=getCustomers&page=${currentPage}&limit=${pageSize}`
+    `../php/api_get.php?action=getCustomers&name=${globalSearchName}&page=${currentPage}&limit=${pageSize}`
   )
     .then((response) => response.json())
     .then((data) => {
       console.log("loadCustomers: ", data);
-      customers = [];
       customers = data.customers;
       customers.forEach((customer) => {
-        const row = document.createElement("tr");
-        let classify = classifies.find(
-          (element) => element.id === customer.classify_id
-        );
-        row.innerHTML = `
-            <td><input type="checkbox" class="row-checkbox"></td>
-            <td>${customer.id}</td>
-            <td>${customer.name}</td>
-            <td>${customer.address}</td>
-            <td>${customer.phoneNum}</td>
-            <td>${classify.name}</td>
-            <td>
-              <button
-                class="btn btn-sm btn-warning"
-                data-customer-id='${customer.id}'
-                data-bs-toggle="modal"
-                data-bs-target="#editCustomerModal"
-              >
-                Sửa
-              </button>
-              <button
-                class="btn btn-sm btn-danger"
-                data-customer-id='${customer.id}'
-                data-bs-toggle="modal"
-                data-bs-target="#deleteCustomerModal"
-              >
-                Xóa
-              </button>
-            </td>
-        `;
-
-        customerTable.appendChild(row);
+          const row = document.createElement("tr");
+          let classify = classifies.find(
+            (element) => element.id === customer.classify_id
+          );
+          row.innerHTML = `
+              <td><input type="checkbox" class="row-checkbox"></td>
+              <td>${customer.id}</td>
+              <td>${customer.name}</td>
+              <td>${customer.address}</td>
+              <td>${customer.phoneNum}</td>
+              <td>${classify.name}</td>
+              <td>
+                <button
+                  class="btn btn-sm btn-warning"
+                  data-customer-id='${customer.id}'
+                  data-bs-toggle="modal"
+                  data-bs-target="#editCustomerModal"
+                >
+                  Sửa
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  data-customer-id='${customer.id}'
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteCustomerModal"
+                >
+                  Xóa
+                </button>
+              </td>
+          `;
+          customerTable.appendChild(row);
       });
 
       createPagination(Number(data.total));
@@ -190,7 +190,7 @@ function createPagination(total) {
       if (currentPage > 1) {
         currentPage -= 1;
         if (globalCatagory != "Tất Cả") {
-          findCustomersByClassify(globalCatagory);
+          findCustomers(globalCatagory);
         } else {
           loadCustomers();
         }
@@ -206,7 +206,7 @@ function createPagination(total) {
       pageButton.addEventListener("click", () => {
         currentPage = i;
         if (globalCatagory != "Tất Cả") {
-          findCustomersByClassify(globalCatagory);
+          findCustomers(globalCatagory);
         } else {
           loadCustomers();
         }
@@ -227,7 +227,7 @@ function createPagination(total) {
       if (currentPage < totalPages) {
         currentPage += 1;
         if (globalCatagory != "Tất Cả") {
-          findCustomersByClassify(globalCatagory);
+          findCustomers(globalCatagory);
         } else {
           loadCustomers();
         }
@@ -237,26 +237,33 @@ function createPagination(total) {
   }
 }
 
-function findCustomersByClassify(category) {
+function findCustomers(category) {
+  const searchValue = document.getElementById("search").value.toLowerCase();
   const customerTable = document.getElementById("customer-table");
   customerTable.innerHTML = "";
 
-  globalCatagory = category;
+  globalSearchName = searchValue;
 
-  if (category != "Tất Cả") {
-    let classify = classifies.find((element) => element.name === category);
+  if (category != null) {
+    globalCatagory = category;
+  }
+
+  if (globalCatagory != "Tất Cả") {
+    let classify = classifies.find(
+      (element) => element.name === globalCatagory
+    );
 
     fetch(
-      `../php/api_get.php?action=findCustomersByClassify&classify_id=${classify.id}&page=${currentPage}&limit=${pageSize}`
+      `../php/api_get.php?action=findCustomers&classify_id=${classify.id}&name=${searchValue}&page=${currentPage}&limit=${pageSize}`
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log("findCustomersByClassify: ", data);
-        customers = [];
+        console.log("findCustomers: ", data);
         customers = data.customers;
         customers.forEach((customer) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
+          if (Number(customer.active) === 1) {
+            const row = document.createElement("tr");
+            row.innerHTML = `
             <td><input type="checkbox" class="row-checkbox"></td>
             <td>${customer.id}</td>
             <td>${customer.name}</td>
@@ -281,9 +288,9 @@ function findCustomersByClassify(category) {
                 Xóa
               </button>
             </td>
-        `;
-
-          customerTable.appendChild(row);
+            `;
+            customerTable.appendChild(row);
+          }
         });
 
         createPagination(Number(data.total));
@@ -323,267 +330,230 @@ function findCustomersByClassify(category) {
   }
 }
 
-function findCustomerByName() {
-  const searchValue = document.getElementById("search").value.toLowerCase();
-  const customerTable = document.getElementById("customer-table");
-  customerTable.innerHTML = "";
+function openAddCustomer() {
+  const modalElement = document.getElementById("addCustomerModal");
+  const modal = new bootstrap.Modal(modalElement); // Khởi tạo modal
 
-  
+  const groupList = document.getElementById("customerGroup");
+  groupList.innerHTML = "";
+
+  classifies.forEach((group) => {
+    const option = document.createElement("option");
+    option.value = group.name;
+    option.textContent = group.name;
+    groupList.appendChild(option);
+  });
+  modal.show(); // Hiển thị modal
 }
 
-// function openConfirmMoveToTrash() {
-//   const modalElement = document.getElementById("confirmMoveToTrashModal");
-//   const modal = new bootstrap.Modal(modalElement);
-//   modal.show();
-// }
+function saveCustomer() {
+  // Lấy dữ liệu từ các trường nhập
+  const group = document.getElementById("customerGroup").value;
+  const name = document.getElementById("customerName").value;
+  const phone = document.getElementById("customerPhone").value;
+  const address = document.getElementById("customerAddress").value;
+  const userName = document.getElementById("customerUserName").value;
+  const password = document.getElementById("customerPassword").value;
 
-// function moveToTrash() {
-//   const selectAllCheckbox = document.getElementById("select-all");
-//   if (selectAllCheckbox.checked) {
-//     trashCustomers = trashCustomers.concat(customers);
-//     customers.length = 0;
-//     // Sau khi xóa, ẩn modal
-//     const confirmModal = bootstrap.Modal.getInstance(
-//       document.getElementById("confirmMoveToTrashModal")
-//     );
-//     confirmModal.hide();
-//     localStorage.setItem("customers", JSON.stringify(customers));
-//     localStorage.setItem("trashCustomers", JSON.stringify(trashCustomers));
-//     loadCustomers();
-//     return;
-//   }
+  // Kiểm tra dữ liệu hợp lệ
+  if (group && name && phone && address && userName && password) {
+    let classifyID = classifies.find((x) => x.name === group).id;
+    const newCustomer = new FormData();
+    newCustomer.append("classifyID", classifyID);
+    newCustomer.append("name", name);
+    newCustomer.append("phone", phone);
+    newCustomer.append("address", address);
+    newCustomer.append("userName", userName);
+    newCustomer.append("password", password);
 
-//   const rowCheckboxes = document.querySelectorAll(".row-checkbox");
-//   rowCheckboxes.forEach((checkbox) => {
-//     if (checkbox.checked) {
-//       const row = checkbox.closest("tr");
-//       const id = row.cells[1].textContent.trim();
-//       const index = customers.findIndex((customer) => customer.id === id);
-//       if (index != -1) {
-//         const removedCustomer = customers.splice(index, 1)[0];
-//         trashCustomers.push(removedCustomer);
-//       }
-//     }
-//   });
+    // console.log(customers);
 
-//   localStorage.setItem("customers", JSON.stringify(customers));
-//   localStorage.setItem("trashCustomers", JSON.stringify(trashCustomers));
+    fetch(`../php/api_post.php?action=createCustomer`, {
+      method: "POST",
+      body: newCustomer,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Đóng modal sau khi lưu
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("addCustomerModal")
+        );
+        modal.hide();
+        // Reset form
+        document.getElementById("customerForm").reset();
+        if (data.success) {
+          window.onload();
+        } else {
+          alert(data.error + ` ${data.details}`);
+        }
+      });
+  } else {
+    alert("Vui lòng nhập đầy đủ thông tin.");
+  }
+}
 
-//   // Sau khi xóa, ẩn modal
-//   const confirmModal = bootstrap.Modal.getInstance(
-//     document.getElementById("confirmMoveToTrashModal")
-//   );
-//   confirmModal.hide();
+var editCustomerModal = document.getElementById("editCustomerModal");
+editCustomerModal.addEventListener("show.bs.modal", function (e) {
+  let button = e.relatedTarget;
+  operationId = button.getAttribute("data-customer-id");
+  const idx = customers.findIndex((customer) => customer.id === operationId);
+  if (idx != -1) {
+    const groupList = document.getElementById("editCustomerCategory");
+    groupList.innerHTML = "";
+    classifies.forEach((group) => {
+      const option = document.createElement("option");
+      option.value = group.name;
+      option.textContent = group.name;
+      groupList.appendChild(option);
+    });
 
-//   loadCustomers();
-// }
+    console.log("customers[idx]: ", customers[idx]);
 
-// function openAddCustomer() {
-//   const modalElement = document.getElementById("addCustomerModal");
-//   const modal = new bootstrap.Modal(modalElement); // Khởi tạo modal
+    let classify = classifies.find((x) => x.id === customers[idx].classify_id);
 
-//   const groupList = document.getElementById("customerGroup");
-//   groupList.innerHTML = "";
+    console.log("classify: ", classify);
 
-//   groups.forEach((group) => {
-//     const option = document.createElement("option");
-//     option.value = group.name;
-//     option.textContent = group.name;
-//     groupList.appendChild(option);
-//   });
-//   modal.show(); // Hiển thị modal
-// }
+    document.getElementById("editCustomerCategory").value = classify.name;
+    document.getElementById("editCustomerName").value = customers[idx].name;
+    document.getElementById("editCustomerPhone").value =
+      customers[idx].phoneNum;
+    document.getElementById("editCustomerAddress").value =
+      customers[idx].address;
+    document.getElementById("editCustomerUserName").value =
+      customers[idx].user_name;
+    document.getElementById("editCustomerPassword").value = "";
+  }
+});
 
-// function saveCustomer() {
-//   // Lấy dữ liệu từ các trường nhập
-//   const group = document.getElementById("customerGroup").value;
-//   const id = document.getElementById("customerId").value;
-//   const name = document.getElementById("customerName").value;
-//   const phone = document.getElementById("customerPhone").value;
-//   const address = document.getElementById("customerAddress").value;
+function editCustomer() {
+  const group = document.getElementById("editCustomerCategory").value;
+  const name = document.getElementById("editCustomerName").value;
+  const phone = document.getElementById("editCustomerPhone").value;
+  const address = document.getElementById("editCustomerAddress").value;
+  const userName = document.getElementById("editCustomerUserName").value;
+  const password = document.getElementById("editCustomerPassword").value;
 
-//   // Kiểm tra dữ liệu hợp lệ
-//   if (group && id && name && phone && address) {
-//     const newCustomer = {
-//       id,
-//       name,
-//       address,
-//       phone,
-//       group,
-//     };
+  // Kiểm tra dữ liệu hợp lệ
+  if (operationId && group && name && phone && address && userName) {
+    let classifyID = classifies.find((x) => x.name === group).id;
+    const updateCustomer = new FormData();
+    updateCustomer.append("id", operationId);
+    updateCustomer.append("classifyID", classifyID);
+    updateCustomer.append("name", name);
+    updateCustomer.append("phone", phone);
+    updateCustomer.append("address", address);
+    updateCustomer.append("userName", userName);
+    updateCustomer.append("password", password);
 
-//     customers.push(newCustomer); // Thêm khách hàng vào mảng
-//     loadCustomers();
-//     // console.log(customers);
+    fetch(`../php/api_post.php?action=updateCustomer`, {
+      method: "POST",
+      body: updateCustomer,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        
+        // Reset form
+        document.getElementById("editCustomerForm").reset();
 
-//     // Đóng modal sau khi lưu
-//     const modal = bootstrap.Modal.getInstance(
-//       document.getElementById("addCustomerModal")
-//     );
-//     modal.hide();
-//     localStorage.setItem("customers", JSON.stringify(customers));
-//     // Reset form
-//     document.getElementById("customerForm").reset();
-//   } else {
-//     alert("Vui lòng nhập đầy đủ thông tin.");
-//   }
-// }
+        if (data.success) {
+          window.onload();
+        } else {
+          alert(data.error + ` ${data.details}`);
+        }
+      })
+      .catch((e) => console.error("Error: ", e));
+  } else {
+    alert("Vui lòng nhập đầy đủ thông tin.");
+  }
+}
 
-// var editCustomerModal = document.getElementById("editCustomerModal");
-// editCustomerModal.addEventListener("show.bs.modal", function(e) {
-//   let button = e.relatedTarget;
-//   operationId = button.getAttribute("data-customer-id");
-//   const idx = customers.findIndex((customer) => customer.id === operationId);
-//   if(idx != -1) {
-//     const groupList = document.getElementById("editCustomerGroup");
-//     groupList.innerHTML = "";
-//     groups.forEach((group) => {
-//       const option = document.createElement("option");
-//       option.value = group.name;
-//       option.textContent = group.name;
-//       groupList.appendChild(option);
-//     });
+function moveToTrash() {
+  const selectAllCheckbox = document.getElementById("select-all");
+  if (selectAllCheckbox.checked) {
+    fetch(`../php/api_patch.php?action=deactivateAllCustomers`)
+      .then((response) => response.json())
+      .then((data) => {
+        const confirmModal = bootstrap.Modal.getInstance(
+          document.getElementById("confirmMoveToTrashModal")
+        );
+        confirmModal.hide();
 
-//     document.getElementById("editCustomerGroup").value = customers[idx].group;
-//     document.getElementById("editCustomerId").value = customers[idx].id;
-//     document.getElementById("editCustomerName").value = customers[idx].name;
-//     document.getElementById("editCustomerPhone").value = customers[idx].phone;
-//     document.getElementById("editCustomerAddress").value = customers[idx].address;
-//   }
-// });
+        if (data.success) {
+          window.onload();
+        } else {
+          alert(data.error + ` ${data.details}`);
+          return;
+        }
+      });
+  }
 
-// function editCustomer() {
-//   const group = document.getElementById("editCustomerGroup").value;
-//   const id = document.getElementById("editCustomerId").value;
-//   const name = document.getElementById("editCustomerName").value;
-//   const phone = document.getElementById("editCustomerPhone").value;
-//   const address = document.getElementById("editCustomerAddress").value;
+  const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+  const deactivateCustomerIds = [];
+  rowCheckboxes.forEach((checkbox) => {
+    if (checkbox.checked) {
+      const row = checkbox.closest("tr");
+      const id = row.cells[1].textContent.trim();
+      const index = customers.findIndex((customer) => customer.id === id);
+      if (index != -1) {
+        deactivateCustomerIds.push(id);
+      }
+    }
+  });
 
-//   // Kiểm tra dữ liệu hợp lệ
-//   if (group && id && name && phone && address) {
-//     const editCustomer = {
-//       id,
-//       name,
-//       address,
-//       phone,
-//       group,
-//     };
+  // chuyển mảng id thành chuỗi phân tác bằng dấu phẩy để gửi qua BE
+  const idsString = deactivateCustomerIds.join(',');
 
-//     const idx = customers.findIndex((customer) => customer.id === editCustomer.id);
-//     customers[idx] = editCustomer;
-//     loadCustomers();
+  fetch(`../php/api_patch.php?action=deactivateCustomers&ids=${idsString}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const confirmModal = bootstrap.Modal.getInstance(
+        document.getElementById("confirmMoveToTrashModal")
+      );
+      confirmModal.hide();
 
-//     // Đóng modal sau khi lưu
-//     const modal = bootstrap.Modal.getInstance(
-//       document.getElementById("editCustomerModal")
-//     );
-//     modal.hide();
-//     localStorage.setItem("customers", JSON.stringify(customers));
-//     // Reset form
-//     document.getElementById("editCustomerForm").reset();
-//   } else {
-//     alert("Vui lòng nhập đầy đủ thông tin.");
-//   }
-// }
+      if(data.success) {
+        window.onload();
+      } else {
+        alert(`${data.error} ${data.details}`);
+      }
+    });
+}
 
-// var deleteCustomerModal = document.getElementById("deleteCustomerModal");
-// deleteCustomerModal.addEventListener("show.bs.modal", function (event) {
-//   let button = event.relatedTarget;
-//   operationId = button.getAttribute("data-customer-id");
-//   var modalBodySpan = document.getElementById("operationDeleteId");
-//   modalBodySpan.textContent = operationId;
-// });
-// function deleteCustomer() {
-//   const index = customers.findIndex(
-//     (customer) => customer.id === operationId
-//   );
-//   if (index != -1) {
-//     const deleteCustomer = customers.splice(index, 1)[0];
-//     trashCustomers.push(deleteCustomer);
-//   }
-//   localStorage.setItem("customers", JSON.stringify(customers));
-//   localStorage.setItem("trashCustomers", JSON.stringify(trashCustomers));
+var deleteCustomerModal = document.getElementById("deleteCustomerModal");
+deleteCustomerModal.addEventListener("show.bs.modal", function (event) {
+  let button = event.relatedTarget;
+  operationId = button.getAttribute("data-customer-id");
+  var modalBodySpan = document.getElementById("operationDeleteId");
+  modalBodySpan.textContent = operationId;
+});
+function deleteCustomer() {
+  const index = customers.findIndex(
+    (customer) => customer.id === operationId
+  );
+  if (index != -1) {
+    fetch(`../php/api_patch.php?action=deactivateCustomer&id=${operationId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("deleteCustomerModal")
+        );
+        modal.hide();
+        if(data.success) {
+          window.onload();
+        } else {
+          alert(`${data.error} ${data.details}`);
+        }
+      });
+  } else {
+    alert(`Không tìm thấy id: ${operationId}`);
+  }
 
-//   const modal = bootstrap.Modal.getInstance(
-//     document.getElementById("deleteCustomerModal")
-//   );
-//   modal.hide();
-//   loadCustomers();
-// }
+}
 
-// function importExcel() {
-//   const fileInput = document.getElementById("fileInput");
-//   const file = fileInput.files[0];
-
-//   if (!file) {
-//     alert("Vui lòng chọn một file Excel.");
-//     return;
-//   }
-
-//   const reader = new FileReader();
-//   reader.onload = function (e) {
-//     const data = new Uint8Array(e.target.result);
-//     const workbook = XLSX.read(data, { type: "array" });
-//     const sheetName = workbook.SheetNames[0];
-//     const sheet = workbook.Sheets[sheetName];
-
-//     // Chuyển đổi sheet sang JSON
-//     const rows = XLSX.utils.sheet_to_json(sheet);
-//     customers = customers.concat(rows);
-//     loadCustomers();
-
-//     localStorage.setItem("customers", JSON.stringify(customers));
-
-//     // Ẩn modal sau khi nhập file
-//     const modal = bootstrap.Modal.getInstance(
-//       document.getElementById("excelModal")
-//     );
-//     modal.hide();
-//   };
-
-//   reader.readAsArrayBuffer(file);
-//   document.getElementById("fileInput").value = "";
-// }
-
-// function exportExcel() {
-//   // Lấy bảng dữ liệu mà bỏ qua cột cuối
-//   const table = document.getElementById("customerTable");
-//   const rows = [];
-//   const headers = ["id", "name", "address", "phone", "group"];
-
-//   // Lấy các hàng trong bảng
-//   const tbody = table.querySelector("tbody");
-//   const trElements = tbody.querySelectorAll("tr");
-
-//   // Lấy dữ liệu từ các hàng, bỏ qua cột "Chức năng"
-//   trElements.forEach((tr) => {
-//     const cells = tr.querySelectorAll("td");
-//     const row = [
-//       cells[1]?.innerText,
-//       cells[2]?.innerText,
-//       cells[3]?.innerText,
-//       cells[4]?.innerText,
-//       cells[5]?.innerText,
-//     ];
-//     rows.push(row);
-//   });
-
-//   const worksheetData = [headers, ...rows];
-
-//   // Tạo workbook và worksheet từ dữ liệu
-//   const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-//   const workbook = XLSX.utils.book_new();
-//   XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-//   // Xuất file Excel
-//   XLSX.writeFile(workbook, "customer_data.xlsx");
-// }
-
-// function trashPage() {
-//   window.location.href = "trashCustomers.html";
-// }
+function trashPage() {
+  window.location.href = "../php/trashCustomer.php";
+}
 
 window.onload = function () {
   loadClassifies();
-  loadCustomers();
 };

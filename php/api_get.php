@@ -38,24 +38,73 @@ switch ($action) {
         }
         break;
 
+    case 'getHangHoaByName':
+        $name = isset($_GET['name']) ? mysqli_real_escape_string($conn, $_GET['name']) : '';
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT * FROM hang_hoa";
+        if(!empty($name)) {
+            $sql .= " WHERE name LIKE '%$name%'";
+        }
+        $sql .= " ORDER BY create_at DESC LIMIT $limit OFFSET $offset";
+        // Thực hiện truy vấn
+        $result = mysqli_query($conn, $sql);
+
+        // Lấy kết quả và trả về dữ liệu
+        $response = [
+            'products' => [],
+            'total' => 0
+        ];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $response['products'][] = $row;
+            }
+        }
+
+        $sqlTotal = "select count(*) as total from hang_hoa";
+        if(!empty($name)) {
+            $sqlTotal .= " WHERE name LIKE '%$name%'";
+        }
+        $resultTotal = mysqli_query($conn, $sqlTotal);
+
+        if ($resultTotal) {
+            $response['total'] = mysqli_fetch_assoc($resultTotal)['total'];
+        } else {
+            $response['total'] = 0;
+        }
+        break;
+
     case 'getHangHoa':
         // Truy vấn lấy số lượng hàng hóa
-        $sql = "SELECT 
-                    id, 
-                    name, 
-                    stock, 
-                    sold 
-                FROM hang_hoa";
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT * FROM hang_hoa ORDER BY create_at DESC LIMIT $limit OFFSET $offset";
 
         // Thực hiện truy vấn
         $result = mysqli_query($conn, $sql);
 
         // Lấy kết quả và trả về dữ liệu
-        $response = [];
+        $response = [
+            'products' => [],
+            'total' => 0
+        ];
         if ($result) {
             while ($row = mysqli_fetch_assoc($result)) {
-                $response[] = $row;
+                $response['products'][] = $row;
             }
+        }
+
+        $sqlTotal = "select count(*) as total from hang_hoa";
+        $resultTotal = mysqli_query($conn, $sqlTotal);
+
+        if ($resultTotal) {
+            $response['total'] = mysqli_fetch_assoc($resultTotal)['total'];
+        } else {
+            $response['total'] = 0;
         }
         break;
 
@@ -158,11 +207,17 @@ switch ($action) {
 
     case 'getCustomers':
         // API: getCustomers
+        $name = isset($_GET['name']) ? mysqli_real_escape_string($conn, $_GET['name']) : '';
         $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
         $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
         $offset = ($page - 1) * $limit;
 
-        $sql = "SELECT * FROM khach_hang LIMIT $limit OFFSET $offset";
+        $sql = "SELECT * FROM khach_hang WHERE active = 1";
+        if (!empty($name)) {
+            $sql .= " AND name LIKE '%$name%'";
+        }
+        $sql .= " ORDER BY join_date DESC";
+        $sql .= " LIMIT $limit OFFSET $offset";
         $result = mysqli_query($conn, $sql);
 
         $response = [
@@ -181,40 +236,86 @@ switch ($action) {
         }
 
         // tổng số lượng khách hàng (để tính tổng số trang)
-        $sqlTotal = "SELECT COUNT(*) AS total FROM khach_hang";
+        $sqlTotal = "SELECT COUNT(*) AS total FROM khach_hang WHERE active = 1";
+        if (!empty($name)) {
+            $sqlTotal .= " AND name LIKE '%$name%'";
+        }
         $totalResult = mysqli_query($conn, $sqlTotal);
         $total = mysqli_fetch_assoc($totalResult)['total'];
         $response['total'] = $total;
         break;
 
-    case 'findCustomersByClassify':
+    case 'getTrashCustomers':
         $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
         $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
         $offset = ($page - 1) * $limit;
-        $classify_id = isset($_GET['classify_id']) ? (int) $_GET['classify_id'] : 1;
 
-        $sql = "SELECT * FROM khach_hang
-                WHERE classify_id = $classify_id LIMIT $limit OFFSET $offset";
+        $sql = "SELECT * FROM khach_hang WHERE active = 0";
+        $sql .= " ORDER BY join_date DESC";
+        $sql .= " LIMIT $limit OFFSET $offset";
         $result = mysqli_query($conn, $sql);
 
-        // Khởi tạo mảng response
         $response = [
-            'customers' => [],
+            'trashCustomers' => [],
             'total' => 0
         ];
 
         if ($result) {
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
-                    $response['customers'][] = $row;
+                    $response['trashCustomers'][] = $row;
                 }
+            } else {
+                echo "No customers found.";
             }
         }
 
-        $sqlTotal = "SELECT COUNT(*) AS total FROM khach_hang WHERE classify_id = $classify_id";
+        // tổng số lượng khách hàng (để tính tổng số trang)
+        $sqlTotal = "SELECT COUNT(*) AS total FROM khach_hang WHERE active = 0";
         $totalResult = mysqli_query($conn, $sqlTotal);
         $total = mysqli_fetch_assoc($totalResult)['total'];
         $response['total'] = $total;
+        break;
+
+    case 'findCustomers':
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+        $classify_id = isset($_GET['classify_id']) ? (int) $_GET['classify_id'] : 1;
+
+        $name = isset($_GET['name']) ? mysqli_real_escape_string($conn, $_GET['name']) : '';
+
+        $sql = "SELECT * FROM khach_hang WHERE classify_id = $classify_id AND active = 1";
+        if (!empty($name)) {
+            $sql .= " AND name LIKE '%$name%'";
+        }
+        $sql .= " ORDER BY join_date DESC";
+        $sql .= " LIMIT $limit OFFSET $offset";
+
+        $result = mysqli_query($conn, $sql);
+
+        $response = [
+            'customers' => [],
+            'total' => 0
+        ];
+
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $response['customers'][] = $row;
+            }
+        }
+
+        $sqlTotal = "SELECT COUNT(*) AS total FROM khach_hang WHERE classify_id = $classify_id AND active = 1";
+        if (!empty($name)) {
+            $sqlTotal .= " AND name LIKE '%$name%'";
+        }
+
+        $totalResult = mysqli_query($conn, $sqlTotal);
+        if ($totalResult) {
+            $response['total'] = mysqli_fetch_assoc($totalResult)['total'];
+        } else {
+            $response['total'] = 0;
+        }
         break;
 
 

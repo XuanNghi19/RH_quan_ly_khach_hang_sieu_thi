@@ -16,6 +16,9 @@ create table khach_hang(
     classify_id int not null default 1,
     avatar_url varchar(255),
     join_date datetime default current_timestamp,
+    user_name varchar(255) not null,
+    password varchar(255) not null,
+    active tinyint(1) default 1,
     foreign key (classify_id) references classify(id)
 );
 
@@ -24,8 +27,9 @@ create table hang_hoa(
     name text not null,
     price decimal(10, 2) not null,
     img_url text,
-    stock int not null, 
-    sold int not null
+    stock int default 0, 
+    sold int default 0,
+    create_at datetime default current_timestamp
 );
 
 create table giao_dich(
@@ -59,19 +63,19 @@ values
 ("Hạng Vàng", 25.00),
 ("VIP", 50.00);
 
-insert into khach_hang (name, address, phoneNum, classify, avatar_url)
+insert into khach_hang (name, address, phoneNum, classify, avatar_url, user_name, password, active)
 values
-("Phạm Thành Công", "24 Đống Đa, Hà Nội", "0234516241", "../bucket/image/avatar/Phạm Thành Công.jpg"),
-("Nguyễn Đăng Khoa", "31 Hàng Đống, Hà Nội", "0234516241", "../bucket/image/avatar/Nguyễn Đăng Khoa.jpg"),
-("Phạm Thành Công", "24 Đống Đa, Hà Nội", "0234516242", "../bucket/image/avatar/Phạm Thành Công.jpg"),
-("Trần Văn Bình", "12 Hoàng Mai, Hà Nội", "0234516243", "../bucket/image/avatar/Phạm Thành Công.jpg"),
-("Ngô Thanh Hòa", "98 Láng Hạ, Hà Nội", "0234516244", "../bucket/image/avatar/Phạm Thành Công.jpg"),
-("Lê Thị Thu", "56 Kim Liên, Hà Nội", "0234516245", "../bucket/image/avatar/Phạm Thành Công.jpg"),
-("Hoàng Văn Dũng", "45 Tôn Đức Thắng, Hà Nội", "0234516246", "../bucket/image/avatar/Phạm Thành Công.jpg"),
-("Nguyễn Minh Anh", "78 Cầu Giấy, Hà Nội", "0234516247", "../bucket/image/avatar/Phạm Thành Công.jpg"),
-("Phạm Thị Hồng", "89 Đại La, Hà Nội", "0234516248", "../bucket/image/avatar/Phạm Thành Công.jpg"),
-("Vũ Thanh Hà", "32 Lạc Long Quân, Hà Nội", "0234516249", "../bucket/image/avatar/Phạm Thành Công.jpg");
-("Trần Thị Lan", "11 Trung Kính, Hà Nội", "0234516250", "../bucket/image/avatar/Trần Thị Lan.jpg");
+("Phạm Thành Công", "24 Đống Đa, Hà Nội", "0234516241", "../bucket/image/avatar/Phạm Thành Công.jpg", "user", "123"),
+("Nguyễn Đăng Khoa", "31 Hàng Đống, Hà Nội", "0234516241", "../bucket/image/avatar/Nguyễn Đăng Khoa.jpg", "user", "123"),
+("Phạm Thành Long", "24 Đống Đa, Hà Nội", "0234516242", "../bucket/image/avatar/Phạm Thành Công.jpg", "user", "123"),
+("Trần Văn Bình", "12 Hoàng Mai, Hà Nội", "0234516243", "../bucket/image/avatar/Phạm Thành Công.jpg", "user", "123"),
+("Ngô Thanh Hòa", "98 Láng Hạ, Hà Nội", "0234516244", "../bucket/image/avatar/Phạm Thành Công.jpg", "user", "123"),
+("Lê Thị Thu", "56 Kim Liên, Hà Nội", "0234516245", "../bucket/image/avatar/Phạm Thành Công.jpg", , "user", "123"),
+("Hoàng Văn Dũng", "45 Tôn Đức Thắng, Hà Nội", "0234516246", "../bucket/image/avatar/Phạm Thành Công.jpg", "user", "123"),
+("Nguyễn Minh Anh", "78 Cầu Giấy, Hà Nội", "0234516247", "../bucket/image/avatar/Phạm Thành Công.jpg", "user", "123"),
+("Phạm Thị Hồng", "89 Đại La, Hà Nội", "0234516248", "../bucket/image/avatar/Phạm Thành Công.jpg", "user", "123"),
+("Vũ Thanh Hà", "32 Lạc Long Quân, Hà Nội", "0234516249", "../bucket/image/avatar/Phạm Thành Công.jpg", "user", "123");
+("Trần Thị Lan", "11 Trung Kính, Hà Nội", "0234516250", "../bucket/image/avatar/Trần Thị Lan.jpg", "user", "123");
 
 
 
