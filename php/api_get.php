@@ -3,7 +3,7 @@
 $host = "localhost";
 $username = "root";
 $password = "";
-$database = "qlkh";
+$database = "ql_kh";
 
 $conn = mysqli_connect($host, $username, $password, $database);
 
@@ -17,6 +17,12 @@ $action = isset($_GET['action']) ? $_GET['action'] : null;
 $response = [];
 // Xử lý theo từng hành động
 switch ($action) {
+
+    case 'getProductsNum':
+        $sql = "select count(*) as total from hang_hoa";
+        $response = mysqli_fetch_assoc(mysqli_query($conn, $sql));
+        break;
+
     case 'getHangHoaStock':
         // Truy vấn lấy tổng số lượng hàng hóa trong kho và đã bán
         $sql = "SELECT 

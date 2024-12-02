@@ -87,6 +87,13 @@ fetch("../php/api_get.php?action=getDoanhThuChart")
   })
   .catch((error) => console.error("Error: ", error));
 
+fetch("../php/api_get.php?action=getProductsNum")
+  .then((response) => response.json())
+  .then((data) => {
+    console.log("quantityOfGoods: ", data.total);
+    document.getElementById("quantityOfGoods").innerText = numFormater(data.total);
+  })
+
 fetch("../php/api_get.php?action=getHangHoaChart")
   .then((response) => response.json())
   .then((data) => {

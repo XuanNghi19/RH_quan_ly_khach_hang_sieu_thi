@@ -3,7 +3,7 @@
 $host = "localhost";
 $username = "root";
 $password = "";
-$database = "qlkh";
+$database = "ql_kh";
 
 $conn = mysqli_connect($host, $username, $password, $database);
 
